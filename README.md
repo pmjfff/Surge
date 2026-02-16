@@ -1,3 +1,6 @@
+[![Support on Afdian](https://img.shields.io/badge/Support-爱发电-orange.svg?style=flat-square&logo=afdian)](https://afdian.com/a/Rabbit-Spec)
+
+
 <h1 align="center">Surge自用配置以及模块和脚本</h1>
 
 <p align="center">
@@ -22,11 +25,23 @@
 
 本仓库之中所有配置/脚本纯属自用备份，请不要fork，自行同步。
 
+---
+
+## ☕ 赞助与支持
+
+如果你觉得 **Rabbit-Spec** 的Surge项目对你有帮助，欢迎请我喝杯咖啡。
+
+👉 [点击前往爱发电支持我](https://afdian.com/a/Rabbit-Spec)
+
+---
+
 ## 我用的机场
 **我用着好用不代表你用着也好用，如果想要入手的话，建议先买一个月体验一下。任何机场都有跑路的可能。**<br>
 > **「Nexitally」:** [佩奇家主站，一家全线中转线路的高端机场，延迟低速度快。](https://naiixi.com/signupbyemail.aspx?MemberCode=0b532ff85dda43e595fb1ae17843ae6d20211110231626) <br>
 
 > **「TAG」:** [目前共有90+个国家地区节点，覆盖范围目前是机场里最广的。](https://482469.dedicated-afflink.com) <br>
+
+---
 
 # 免责声明
 - Rabbit-Spec 本仓库中涉及的任何解锁和解密分析脚本仅用于资源共享和学习研究，不能保证其合法性，准确性，完整性和有效性，请根据情况自行判断。
