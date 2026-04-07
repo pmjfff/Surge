@@ -1,4 +1,8 @@
-name: Auto Surge Rules
+# 深巷有喵的「Surge」配置规则
+# 日期：2026-04-07
+# 配置作者：https://github.com/Rabbit-Spec/Surge
+
+name: Auto-Surge-Rules
 
 # 触发器配置
 on:
