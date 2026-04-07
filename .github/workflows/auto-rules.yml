@@ -1,21 +1,19 @@
 name: Auto Surge Rules
 
-# 触发器配置：定义工作流何时运行
+# 触发器配置
 on:
   schedule:
     # 定时任务：每天 UTC 时间 23:00 执行（北京时间 07:00）
     - cron: '0 23 * * *'
-  # 允许在 GitHub 网页端的 Actions 面板中手动点击 "Run workflow" 按钮触发更新
+  # 允许手动触发
   workflow_dispatch:
 
-# 权限配置：赋予 Action 写入当前仓库代码的权限
+# 权限配置
 permissions:
   contents: write
 
-# 任务定义：包含一个名为 update-rules 的具体执行流
 jobs:
   update-rules:
-    # 运行环境：指定分配一台 GitHub 官方托管的最新版 Ubuntu Linux 虚拟机来执行脚本
     runs-on: ubuntu-latest
     
     # 强制所有 JavaScript Actions 使用 Node.js 24
@@ -27,14 +25,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 步骤 2：下载规则、注入自定义头部（含空行）、重命名并归档
-      - name: Download, Add Custom Header and Rename Rules
+      # 步骤 2：下载、合并手动规则、注入头部并归档
+      - name: Download, Merge Custom Rules and Rename
         run: |
-          # 创建输出目录
-          mkdir -p Rules
-          
-          # 定义上游基础 URL
-          BASE_URL="https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release"
+          # 创建输出目录及手动规则存储目录
+          mkdir -p Rules/Manual
           
           # 获取北京时间
           UPDATE_TIME=$(TZ="Asia/Shanghai" date +"%Y-%m-%d %H:%M:%S")
@@ -45,21 +40,37 @@ jobs:
             local target_name=$2
             local display_name=$3
             
-            # 写入四行 Header
+            # 写入四行 Header 和一个空行
             echo "# NAME: $display_name" > "Rules/$target_name"
             echo "# AUTHOR: Rabbit-Spec" >> "Rules/$target_name"
             echo "# REPO: https://github.com/Rabbit-Spec/Surge" >> "Rules/$target_name"
             echo "# UPDATED: $UPDATE_TIME" >> "Rules/$target_name"
             echo "" >> "Rules/$target_name"
             
-            # 规则内容
+            # 核心合并逻辑：读取 Rules/Manual 目录下的对应手动规则文件
+            local filename_no_ext="${target_name%.*}"
+            local manual_file="Rules/Manual/${filename_no_ext}.txt"
+            
+            if [ -f "$manual_file" ]; then
+              echo "# ======= 手动维护规则 ========" >> "Rules/$target_name"
+              cat "$manual_file" >> "Rules/$target_name"
+              echo "" >> "Rules/$target_name"
+            fi
+            
+            # 追加上游自动同步的规则内容
+            echo "# ======= 上游同步规则 ========" >> "Rules/$target_name"
             curl -sL "$BASE_URL/$source_file" >> "Rules/$target_name"
           }
           
-          # 执行函数处理文件
+          # --- 第一部分：Loyalsoldier 仓库规则 ---
+          BASE_URL="https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release"
           process_rule "proxy.txt" "Proxy.list" "Proxy"
           process_rule "direct.txt" "China.list" "China"
           process_rule "cncidr.txt" "ChinaCIDR.list" "ChinaCIDR"
+          
+          # --- 第二部分：EAlyce 仓库规则 ---
+          BASE_URL="https://raw.githubusercontent.com/EAlyce/conf/refs/heads/main/Rule"
+          process_rule "OpenAI.list" "AIGC.list" "AIGC"
 
       # 步骤 3：Git 提交与推送到远程仓库
       - name: Commit and Push Changes
@@ -71,6 +82,6 @@ jobs:
           
           if ! git diff --staged --quiet; then
             COMMIT_DATE=$(TZ="Asia/Shanghai" date +"%Y.%m.%d")
-            git commit -m "$COMMIT_DATE Auto-update Surge Rules from release branch"
+            git commit -m "$COMMIT_DATE Auto-update Surge Rules from multi-sources"
             git push
           fi
