@@ -1,4 +1,4 @@
-# 深巷有喵的「Surge」配置规则
+# 深巷有喵的上游同步规则
 # 日期：2026-04-07
 # 配置作者：https://github.com/Rabbit-Spec/Surge
 
@@ -75,12 +75,12 @@ jobs:
           
           # --- 第一部分：常规规则同步 ---
           BASE_LOYAL="https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release"
-          process_rule "$BASE_LOYAL/proxy.txt" "Proxy.list" "Proxy"
-          process_rule "$BASE_LOYAL/direct.txt" "China.list" "China"
-          process_rule "$BASE_LOYAL/cncidr.txt" "ChinaCIDR.list" "ChinaCIDR"
+          process_rule "$BASE_LOYAL/proxy.txt" "Proxy.list" "深巷有喵的「Proxy」规则"
+          process_rule "$BASE_LOYAL/direct.txt" "China.list" "深巷有喵的「China」规则"
+          process_rule "$BASE_LOYAL/cncidr.txt" "ChinaCIDR.list" "深巷有喵的「ChinaCIDR」规则"
           
           BASE_EALYCE="https://raw.githubusercontent.com/EAlyce/conf/refs/heads/main/Rule"
-          process_rule "$BASE_EALYCE/OpenAI.list" "AIGC.list" "AIGC"
+          process_rule "$BASE_EALYCE/OpenAI.list" "AIGC.list" "深巷有喵的「AIGC」规则"
           
           # --- 第二部分：blackmatrix7 游戏规则分段聚合 (Game.list) ---
           GAME_TARGET="Rules/Game.list"
@@ -88,7 +88,7 @@ jobs:
           GAME_MANUAL="Rules/Manual/Game.txt"
           
           # 写入聚合文件 Header
-          echo "# NAME: Game" > "$GAME_TARGET"
+          echo "# NAME: 深巷有喵的「Game」规则" > "$GAME_TARGET"
           echo "# AUTHOR: Rabbit-Spec" >> "$GAME_TARGET"
           echo "# REPO: https://github.com/Rabbit-Spec/Surge" >> "$GAME_TARGET"
           echo "# UPDATED: $UPDATE_TIME" >> "$GAME_TARGET"
@@ -125,8 +125,7 @@ jobs:
               curl -sL "$url" | grep -v '^#' >> "$GAME_TARGET"
             fi
             
-            # 段落间距：注入两个换行符提升可读性
-            echo "" >> "$GAME_TARGET"
+            # 段落间距：注入一个换行符提升可读性
             echo "" >> "$GAME_TARGET"
           done
 
@@ -137,7 +136,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add Rules/
           if ! git diff --staged --quiet; then
-            COMMIT_DATE=$(TZ="Asia/Shanghai" date +"%Y.%m.%d")
-            git commit -m "$COMMIT_DATE Auto-update Surge Rules (Segmented Game Aggregation)"
+            COMMIT_TIME=$(TZ="Asia/Shanghai" date +"%Y.%m.%d %H:%M")
+            git commit -m "$COMMIT_TIME Update"
             git push
           fi
