@@ -1,1 +1,1 @@
-.immersivetranslate.com
+DOMAIN-SUFFIX,immersivetranslate.com
