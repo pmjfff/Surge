@@ -1,5 +1,5 @@
 # 深巷有喵的「Surge」上游同步规则
-# 版本：1.0.2
+# 版本：1.0.3
 # 日期：2026-04-07
 # 作者：https://github.com/Rabbit-Spec/Surge
 
@@ -149,8 +149,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add Rules/
           if ! git diff --staged --quiet; then
-            # 格式：2026.04.07 18:22 Update
-            COMMIT_TIME=$(TZ="Asia/Shanghai" date +"%Y.%m.%d %H:%M")
+            COMMIT_TIME=$(TZ="Asia/Shanghai" date +"%Y-%m-%d %H:%M:%S")
             git commit -m "$COMMIT_TIME Update"
             git push
           fi
