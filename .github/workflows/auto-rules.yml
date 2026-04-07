@@ -1,6 +1,6 @@
 # 深巷有喵的「Surge」上游同步规则
-# 版本：1.0.3
-# 日期：2026-04-07
+# 版本：1.0.4
+# 日期：2026.04.07
 # 作者：https://github.com/Rabbit-Spec/Surge
 
 name: Auto-Surge-Rules
@@ -37,7 +37,7 @@ jobs:
           mkdir -p Rules/Manual
           
           # 获取北京时间
-          UPDATE_TIME=$(TZ="Asia/Shanghai" date +"%Y-%m-%d %H:%M:%S")
+          UPDATE_TIME=$(TZ="Asia/Shanghai" date +"%Y.%m.%d %H:%M:%S")
           
           # 1. 定义标准处理函数 (用于 1对1 的规则同步)
           process_rule() {
@@ -149,7 +149,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add Rules/
           if ! git diff --staged --quiet; then
-            COMMIT_TIME=$(TZ="Asia/Shanghai" date +"%Y-%m-%d %H:%M:%S")
+            COMMIT_TIME=$(TZ="Asia/Shanghai" date +"%Y.%m.%d %H:%M:%S")
             git commit -m "$COMMIT_TIME Update"
             git push
           fi
