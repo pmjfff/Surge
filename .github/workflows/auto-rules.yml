@@ -1,5 +1,5 @@
 # 深巷有喵的「Surge」上游同步规则
-# 版本：1.1.1
+# 版本：1.1.2
 # 日期：2026.04.07
 # 作者：https://github.com/Rabbit-Spec/Surge
 
@@ -108,9 +108,9 @@ jobs:
 
           
           # --- 第二部分：Game.list 聚合处理 ---
-          GAME_TARGET="Rules/Game.list"
-          GAME_EXCLUDE="Rules/Manual/Game.exclude.txt"
-          GAME_MANUAL="Rules/Manual/Game.txt"
+          GAME_TARGET="Rules/Game_All_No_Resolve.list"
+          GAME_EXCLUDE="Rules/Manual/Game_All_No_Resolve.exclude.txt"
+          GAME_MANUAL="Rules/Manual/Game_All_No_Resolve.txt"
           game_temp=$(mktemp)
           
           # A. Game 手动规则
