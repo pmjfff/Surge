@@ -1,6 +1,7 @@
-# 深巷有喵的上游同步规则
+# 深巷有喵的「Surge」上游同步规则
+# 版本：1.0.1
 # 日期：2026-04-07
-# 配置作者：https://github.com/Rabbit-Spec/Surge
+# 作者：https://github.com/Rabbit-Spec/Surge
 
 name: Auto-Surge-Rules
 
@@ -29,7 +30,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 步骤 2：下载、清洗、聚合分段并归档
+      # 步骤 2：下载、清洗、统计并归档
       - name: Download, Merge and Filter Rules
         run: |
           # 创建输出目录及手动规则存储目录
@@ -49,60 +50,65 @@ jobs:
             local manual_file="Rules/Manual/${filename_no_ext}.txt"
             local exclude_file="Rules/Manual/${filename_no_ext}.exclude.txt"
             
-            # 写入统一 Header
+            # 创建临时文件存储规则正文
+            temp_body=$(mktemp)
+            
+            # A. 合并手动追加规则
+            if [ -f "$manual_file" ]; then
+              echo "# ======= 手动维护规则 ========" >> "$temp_body"
+              cat "$manual_file" >> "$temp_body"
+              echo "" >> "$temp_body"
+            fi
+            
+            # B. 写入上游同步规则
+            echo "# ======= 上游同步规则 ========" >> "$temp_body"
+            if [ -f "$exclude_file" ] && [ -s "$exclude_file" ]; then
+              # 下载 -> 剔除上游注释 -> 剔除排除列表关键字 -> 写入缓存
+              curl -sL "$source_url" | grep -v '^#' | grep -vFf "$exclude_file" >> "$temp_body"
+            else
+              # 下载 -> 剔除上游注释 -> 写入缓存
+              curl -sL "$source_url" | grep -v '^#' >> "$temp_body"
+            fi
+            
+            # C. 核心统计逻辑：统计非注释且非空行的行数
+            local rule_count=$(grep -v '^#' "$temp_body" | grep -v '^[[:space:]]*$' | wc -l)
+            
+            # D. 构造最终文件：Header + 正文
             echo "# NAME: $display_name" > "$target_path"
             echo "# AUTHOR: Rabbit-Spec" >> "$target_path"
             echo "# REPO: https://github.com/Rabbit-Spec/Surge" >> "$target_path"
             echo "# UPDATED: $UPDATE_TIME" >> "$target_path"
+            echo "# TOTAL RULES: $rule_count" >> "$target_path"
             echo "" >> "$target_path"
             
-            # 合并手动追加规则
-            if [ -f "$manual_file" ]; then
-              echo "# ======= 手动维护规则 ========" >> "$target_path"
-              cat "$manual_file" >> "$target_path"
-              echo "" >> "$target_path"
-              echo "" >> "$target_path"
-            fi
-            
-            # 追加上游同步规则
-            echo "# ======= 上游同步规则 ========" >> "$target_path"
-            if [ -f "$exclude_file" ] && [ -s "$exclude_file" ]; then
-              curl -sL "$source_url" | grep -v '^#' | grep -vFf "$exclude_file" >> "$target_path"
-            else
-              curl -sL "$source_url" | grep -v '^#' >> "$target_path"
-            fi
+            cat "$temp_body" >> "$target_path"
+            rm "$temp_body"
           }
           
           # --- 第一部分：常规规则同步 ---
+          # Loyalsoldier 仓库
           BASE_LOYAL="https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release"
           process_rule "$BASE_LOYAL/proxy.txt" "Proxy.list" "深巷有喵的「Proxy」规则"
           process_rule "$BASE_LOYAL/direct.txt" "China.list" "深巷有喵的「China」规则"
           process_rule "$BASE_LOYAL/cncidr.txt" "ChinaCIDR.list" "深巷有喵的「ChinaCIDR」规则"
-          
+          # EAlyce 仓库
           BASE_EALYCE="https://raw.githubusercontent.com/EAlyce/conf/refs/heads/main/Rule"
           process_rule "$BASE_EALYCE/OpenAI.list" "AIGC.list" "深巷有喵的「AIGC」规则"
           
-          # --- 第二部分：blackmatrix7 游戏规则分段聚合 (Game.list) ---
+          # --- 第二部分：Game.list 聚合处理 ---
           GAME_TARGET="Rules/Game.list"
           GAME_EXCLUDE="Rules/Manual/Game.exclude.txt"
           GAME_MANUAL="Rules/Manual/Game.txt"
+          game_temp=$(mktemp)
           
-          # 写入聚合文件 Header
-          echo "# NAME: 深巷有喵的「Game」规则" > "$GAME_TARGET"
-          echo "# AUTHOR: Rabbit-Spec" >> "$GAME_TARGET"
-          echo "# REPO: https://github.com/Rabbit-Spec/Surge" >> "$GAME_TARGET"
-          echo "# UPDATED: $UPDATE_TIME" >> "$GAME_TARGET"
-          echo "" >> "$GAME_TARGET"
-          
-          # 写入 Game 手动规则
+          # A. Game 手动规则
           if [ -f "$GAME_MANUAL" ]; then
-            echo "# ======= 手动维护规则 ========" >> "$GAME_TARGET"
-            cat "$GAME_MANUAL" >> "$GAME_TARGET"
-            echo "" >> "$GAME_TARGET"
-            echo "" >> "$GAME_TARGET"
+            echo "# ======= 手动维护规则 ========" >> "$game_temp"
+            cat "$GAME_MANUAL" >> "$game_temp"
+            echo "" >> "$game_temp"
           fi
           
-          # 定义游戏子源：格式为 "显示名称|URL"
+          # B. Game 聚合源
           GAME_SUBS=(
             "Epic|https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/release/rule/Surge/Epic/Epic.list"
             "Sony|https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/release/rule/Surge/Sony/Sony.list"
@@ -110,24 +116,30 @@ jobs:
             "Nintendo|https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/release/rule/Surge/Nintendo/Nintendo.list"
           )
           
-          # 循环处理每个游戏子源
           for sub in "${GAME_SUBS[@]}"; do
             name="${sub%%|*}"
             url="${sub#*|}"
-            
-            # 写入分段标识符
-            echo "# ======= $name ========" >> "$GAME_TARGET"
-            
-            # 抓取、清洗、排除并追加
+            echo "# ======= $name ========" >> "$game_temp"
             if [ -f "$GAME_EXCLUDE" ] && [ -s "$GAME_EXCLUDE" ]; then
-              curl -sL "$url" | grep -v '^#' | grep -vFf "$GAME_EXCLUDE" >> "$GAME_TARGET"
+              curl -sL "$url" | grep -v '^#' | grep -vFf "$GAME_EXCLUDE" >> "$game_temp"
             else
-              curl -sL "$url" | grep -v '^#' >> "$GAME_TARGET"
+              curl -sL "$url" | grep -v '^#' >> "$game_temp"
             fi
-            
-            # 段落间距：注入一个换行符提升可读性
-            echo "" >> "$GAME_TARGET"
+            echo "" >> "$game_temp"
           done
+          
+          # C. 统计 Game 规则数
+          game_count=$(grep -v '^#' "$game_temp" | grep -v '^[[:space:]]*$' | wc -l)
+          
+          # D. 写入 Game.list 最终文件
+          echo "# NAME: 深巷有喵的「Game」规则" > "$GAME_TARGET"
+          echo "# AUTHOR: Rabbit-Spec" >> "$GAME_TARGET"
+          echo "# REPO: https://github.com/Rabbit-Spec/Surge" >> "$GAME_TARGET"
+          echo "# UPDATED: $UPDATE_TIME" >> "$GAME_TARGET"
+          echo "# TOTAL RULES: $game_count" >> "$GAME_TARGET"
+          echo "" >> "$GAME_TARGET"
+          cat "$game_temp" >> "$GAME_TARGET"
+          rm "$game_temp"
 
       # 步骤 3：Git 提交与推送到远程仓库
       - name: Commit and Push Changes
@@ -136,6 +148,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add Rules/
           if ! git diff --staged --quiet; then
+            # 格式：2026.04.07 18:22 Update
             COMMIT_TIME=$(TZ="Asia/Shanghai" date +"%Y.%m.%d %H:%M")
             git commit -m "$COMMIT_TIME Update"
             git push
