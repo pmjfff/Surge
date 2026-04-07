@@ -1,5 +1,5 @@
 # 深巷有喵的「Surge」上游同步规则
-# 版本：1.0.5
+# 版本：1.0.6
 # 日期：2026.04.07
 # 作者：https://github.com/Rabbit-Spec/Surge
 
@@ -88,7 +88,7 @@ jobs:
           
           # --- 第一部分：常规规则同步 ---
           # Loyalsoldier 仓库
-          BASE_LOYAL="https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release"
+          BASE_LOYAL="https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/ruleset"
           process_rule "$BASE_LOYAL/direct.txt" "China.list" "深巷有喵的「China」规则"
           process_rule "$BASE_LOYAL/cncidr.txt" "ChinaCIDR.list" "深巷有喵的「ChinaCIDR」规则"
           
