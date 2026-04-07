@@ -1,5 +1,5 @@
 # 深巷有喵的「Surge」上游同步规则
-# 版本：1.0.11
+# 版本：1.1.0
 # 日期：2026.04.07
 # 作者：https://github.com/Rabbit-Spec/Surge
 
@@ -70,7 +70,7 @@ jobs:
               curl -sL "$source_url" | grep -v '^#' >> "$temp_body"
             fi
 
-            if [ "$target_name" = "ChinaCIDR.list" ]; then
+            if [ "$target_name" = "ChinaCIDR_All_No_Resolve.list" ]; then
               sed -i -E '/^IP-CIDR,/ s/$/,no-resolve/' "$temp_body"
             fi
             
