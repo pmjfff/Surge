@@ -1,5 +1,5 @@
 # 深巷有喵的「Surge」上游同步规则
-# 版本：1.0.7
+# 版本：1.0.8
 # 日期：2026.04.07
 # 作者：https://github.com/Rabbit-Spec/Surge
 
@@ -79,7 +79,7 @@ jobs:
             echo "# AUTHOR: Rabbit-Spec" >> "$target_path"
             echo "# REPO: https://github.com/Rabbit-Spec/Surge" >> "$target_path"
             echo "# UPDATED: $UPDATE_TIME" >> "$target_path"
-            echo "# TOTAL RULES: $rule_count" >> "$target_path"
+            echo "# TOTAL: $rule_count" >> "$target_path"
             echo "" >> "$target_path"
             
             cat "$temp_body" >> "$target_path"
@@ -144,7 +144,7 @@ jobs:
           echo "# AUTHOR: Rabbit-Spec" >> "$GAME_TARGET"
           echo "# REPO: https://github.com/Rabbit-Spec/Surge" >> "$GAME_TARGET"
           echo "# UPDATED: $UPDATE_TIME" >> "$GAME_TARGET"
-          echo "# TOTAL RULES: $game_count" >> "$GAME_TARGET"
+          echo "# TOTAL: $game_count" >> "$GAME_TARGET"
           echo "" >> "$GAME_TARGET"
           cat "$game_temp" >> "$GAME_TARGET"
           rm "$game_temp"
