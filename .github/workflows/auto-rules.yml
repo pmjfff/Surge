@@ -1,5 +1,5 @@
 # 深巷有喵的「Surge」上游同步规则
-# 版本：1.1.5
+# 版本：1.1.6
 # 日期：2026.04.08
 # 作者：https://github.com/Rabbit-Spec/Surge
 
@@ -68,11 +68,6 @@ jobs:
             else
               # 下载 -> 剔除上游注释 -> 写入缓存
               curl -sL "$source_url" | grep -v '^#' >> "$temp_body"
-            fi
-
-            if [ "$target_name" = "ChinaCIDR_All_No_Resolve.list" ]; then
-              sed -i -E '/^IP-CIDR6?,[^,]+$/ s/$/,no-resolve/' "$temp_body"
-              echo "" >> "$temp_body"
             fi
             
             # C. 核心统计逻辑：统计非注释且非空行的行数
