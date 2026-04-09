@@ -1,12 +1,14 @@
 # NAME: 深巷有喵的「Proxy」规则
 # AUTHOR: Rabbit-Spec
 # REPO: https://github.com/Rabbit-Spec/Surge
-# UPDATED: 2026.04.09 23:50:42
-# TOTAL: 6766
+# UPDATED: 2026.04.10 00:01:36
+# TOTAL: 6767
 
 # ======= 手动维护规则 ========
 # SNBFORUMS
 DOMAIN-SUFFIX,snbforums.com
+# Asuswrt‑Merlin
+DOMAIN-SUFFIX,asuswrt-merlin.net
 # CalDigit
 DOMAIN-SUFFIX,caldigit.com
 
