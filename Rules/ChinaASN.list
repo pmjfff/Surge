@@ -1,11 +1,10 @@
 # NAME: 深巷有喵的「ChinaASN」规则
 # AUTHOR: Rabbit-Spec
 # REPO: https://github.com/Rabbit-Spec/Surge
-# UPDATED: 2026.04.09 23:08:18
+# UPDATED: 2026.04.09 23:19:15
 # TOTAL: 5076
 
 # ======= 上游同步规则 ========
-
 IP-ASN,4134 // 中国电信骨干网
 IP-ASN,4538 // 中国教育科研网络中心
 IP-ASN,4611 // 中国新华网
