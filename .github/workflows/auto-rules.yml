@@ -1,5 +1,5 @@
 # 深巷有喵的「Surge」上游同步规则
-# 版本：1.1.7
+# 版本：1.1.8
 # 日期：2026.04.09
 # 作者：https://github.com/Rabbit-Spec/Surge
 
@@ -63,11 +63,11 @@ jobs:
             # B. 写入上游同步规则
             echo "# ======= 上游同步规则 ========" >> "$temp_body"
             if [ -f "$exclude_file" ] && [ -s "$exclude_file" ]; then
-              # 下载 -> 剔除上游注释 -> 剔除排除列表关键字 -> 写入缓存
-              curl -sL "$source_url" | grep -v '^#' | grep -vFf "$exclude_file" >> "$temp_body"
+              # 下载 -> 剔除上游注释 -> 剔除空行 -> 剔除排除列表关键字 -> 写入缓存
+              curl -sL "$source_url" | grep -v '^#' | grep -v '^[[:space:]]*$' | grep -vFf "$exclude_file" >> "$temp_body"
             else
-              # 下载 -> 剔除上游注释 -> 写入缓存
-              curl -sL "$source_url" | grep -v '^#' >> "$temp_body"
+              # 下载 -> 剔除上游注释 -> 剔除空行 -> 写入缓存
+              curl -sL "$source_url" | grep -v '^#' | grep -v '^[[:space:]]*$' >> "$temp_body"
             fi
             
             # C. 核心统计逻辑：统计非注释且非空行的行数
@@ -111,7 +111,7 @@ jobs:
           URL_PROXY="https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Apple/Apple_All_No_Resolve.list"
           process_rule "$URL_PROXY" "Apple_All_No_Resolve.list" "深巷有喵的「Apple」规则"
 
-          # --- 第二部分：Proxy.list 聚合处理 ---
+          # --- 第二部分：Proxy_All_No_Resolve.list 聚合处理 ---
           PROXY_TARGET="Rules/Proxy_All_No_Resolve.list"
           PROXY_EXCLUDE="Rules/Manual/Proxy_All_No_Resolve.exclude.txt"
           PROXY_MANUAL="Rules/Manual/Proxy_All_No_Resolve.txt"
@@ -135,9 +135,9 @@ jobs:
             url="${sub#*|}"
             echo "# ======= $name ========" >> "$proxy_temp"
             if [ -f "$PROXY_EXCLUDE" ] && [ -s "$PROXY_EXCLUDE" ]; then
-              curl -sL "$url" | grep -v '^#' | grep -vFf "$PROXY_EXCLUDE" >> "$proxy_temp"
+              curl -sL "$url" | grep -v '^#' | grep -v '^[[:space:]]*$' | grep -vFf "$PROXY_EXCLUDE" >> "$proxy_temp"
             else
-              curl -sL "$url" | grep -v '^#' >> "$proxy_temp"
+              curl -sL "$url" | grep -v '^#' | grep -v '^[[:space:]]*$' >> "$proxy_temp"
             fi
             echo "" >> "$proxy_temp"
           done
@@ -158,7 +158,7 @@ jobs:
           cat "$proxy_temp" >> "$PROXY_TARGET"
           rm "$proxy_temp"
 
-          # --- 第三部分：Game.list 聚合处理 ---
+          # --- 第三部分：Game_All_No_Resolve.list 聚合处理 ---
           GAME_TARGET="Rules/Game_All_No_Resolve.list"
           GAME_EXCLUDE="Rules/Manual/Game_All_No_Resolve.exclude.txt"
           GAME_MANUAL="Rules/Manual/Game_All_No_Resolve.txt"
@@ -184,9 +184,9 @@ jobs:
             url="${sub#*|}"
             echo "# ======= $name ========" >> "$game_temp"
             if [ -f "$GAME_EXCLUDE" ] && [ -s "$GAME_EXCLUDE" ]; then
-              curl -sL "$url" | grep -v '^#' | grep -vFf "$GAME_EXCLUDE" >> "$game_temp"
+              curl -sL "$url" | grep -v '^#' | grep -v '^[[:space:]]*$' | grep -vFf "$GAME_EXCLUDE" >> "$game_temp"
             else
-              curl -sL "$url" | grep -v '^#' >> "$game_temp"
+              curl -sL "$url" | grep -v '^#' | grep -v '^[[:space:]]*$' >> "$game_temp"
             fi
             echo "" >> "$game_temp"
           done
