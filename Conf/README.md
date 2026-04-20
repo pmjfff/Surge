@@ -43,11 +43,6 @@ Surge最低支持版本 :<br>
 
 > **完整版（中文） :** https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/Spec/Surge-CN.conf<br>
 
-**适合 Surge 5 列表视图**<br>
-> **完整版 :** https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/Spec/Surge.conf<br>
-
-> **轻量版 :** https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/Spec/Surge-Lite-CN.conf<br>
-
 **适配两个机场订阅**<br>
 > **Family :** https://raw.githubusercontent.com/Rabbit-Spec/Surge/refs/heads/Master/Conf/Spec/Surge-Family.conf<br>
 
