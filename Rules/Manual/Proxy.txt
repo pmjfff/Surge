@@ -8,3 +8,5 @@ DOMAIN-SUFFIX,caldigit.com
 DOMAIN-SUFFIX,onlyfans.com
 # Dbrand
 DOMAIN-SUFFIX,dbrand.com
+# HomeAssistant
+DOMAIN-SUFFIX,home-assistant.io
